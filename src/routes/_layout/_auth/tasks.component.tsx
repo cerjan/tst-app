@@ -1,17 +1,47 @@
-import {useSuspenseQuery} from "@tanstack/react-query";
-import {ActionIcon, ActionIconGroup, Button, Group, Loader, Table} from "@mantine/core";
+import {
+  useMutation,
+  useQueryClient,
+  useSuspenseQuery
+} from "@tanstack/react-query";
+import {ActionIcon, ActionIconGroup, Button, Group, Table} from "@mantine/core";
 import {IconEdit, IconPlayerPlay, IconPlus, IconTrash} from "@tabler/icons-react";
 import {TextPair} from "@components/text-pair.tsx";
 import {Link, Outlet} from "@tanstack/react-router";
 import {TasksQo} from "@/queries/tasks-qo.ts";
-import {WeekDays} from "@/api/tasks.ts";
+import {tasks, WeekDays} from "@/api/tasks.ts";
+import {modals} from "@mantine/modals";
+import {notifications} from "@mantine/notifications";
 
 export const component = function Home() {
-  const {data, isLoading} = useSuspenseQuery(TasksQo())
+  const {data} = useSuspenseQuery(TasksQo())
+  const queryClient = useQueryClient()
 
-  if (isLoading) return (
-    <Loader/>
-  )
+  const mutationsRun = Object.entries(data).reduce((mutations, [id, task]) => {
+      mutations[id] = useMutation({
+        mutationFn: () => tasks.run(id),
+        onSuccess: () => {
+          notifications.show({
+            title: `Spuštění úlohy dokončeno`,
+            message: `${task.name} / ${id}`,
+            color: 'green'
+          })
+        }
+      })
+
+      return mutations
+    }, {} as Record<string, any>)
+
+  const mutationDelete = useMutation({
+    mutationFn: (_id: string) => new Promise(r => r(true)),
+    onSuccess: () => {
+      queryClient.invalidateQueries({queryKey: ['tasks']}).then()
+    }
+  })
+
+  const onDelete = (id: string) => modals.openConfirmModal({
+    title: 'Opravdu smazat úlohu?',
+    onConfirm: () => mutationDelete.mutate(id)
+  })
 
   return (
     <>
@@ -60,7 +90,12 @@ export const component = function Home() {
               <Table.Td>
                 <Group gap={'xs'} justify={'end'}>
                   <ActionIconGroup>
-                    <ActionIcon title={'Spustit'} variant={'light'}>
+                    <ActionIcon
+                      title={'Spustit'}
+                      variant={'light'}
+                      onClick={() => mutationsRun[id].mutate()}
+                      loading={mutationsRun[id].isPending}
+                    >
                       <IconPlayerPlay size={'1rem'}/>
                     </ActionIcon>
                     <ActionIcon
@@ -76,6 +111,7 @@ export const component = function Home() {
                       title={'Smazat'}
                       variant={'light'}
                       color={'red'}
+                      onClick={() => onDelete(id)}
                     >
                       <IconTrash size={'1rem'}/>
                     </ActionIcon>

@@ -9,6 +9,7 @@ import {routeTree} from "./routeTree.gen.ts";
 import {createTheme, MantineProvider} from "@mantine/core";
 import {AxiosError} from "axios";
 import {Notifications, notifications} from "@mantine/notifications";
+import {ModalsProvider} from "@mantine/modals";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -50,10 +51,12 @@ const theme = createTheme({
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <MantineProvider theme={theme}>
-      <Notifications zIndex={100000}/>
-      <QueryClientProvider client={queryClient}>
-        <RouterProvider router={router}/>
-      </QueryClientProvider>
+      <ModalsProvider labels={{confirm: 'Ano', cancel: 'Ne'}}>
+        <Notifications zIndex={100000}/>
+        <QueryClientProvider client={queryClient}>
+          <RouterProvider router={router}/>
+        </QueryClientProvider>
+      </ModalsProvider>
     </MantineProvider>
   </React.StrictMode>
 )

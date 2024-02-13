@@ -11,12 +11,12 @@ import {
   TextInput
 } from "@mantine/core";
 import {useForm} from "@mantine/form";
-import {HttpMethods, HttpMethodsWithContent, ITask, WeekDays} from "@/api/tasks.ts";
+import {HttpMethods, HttpMethodsWithContent, Task, WeekDays} from "@/api/tasks.ts";
 import {IconCirclePlus, IconTrash} from "@tabler/icons-react";
 import {TimeInput} from "@mantine/dates";
 import {z} from "zod";
 
-export const TaskForm = ({onSubmit, item}: { onSubmit: any, item?: ITask }) => {
+export const TaskForm = ({onSubmit, item}: { onSubmit: any, item?: Task }) => {
 
   const form = useForm({
     initialValues: {

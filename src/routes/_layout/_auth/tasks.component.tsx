@@ -22,7 +22,7 @@ export const component = function Home() {
         onSuccess: () => {
           notifications.show({
             title: `Spuštění úlohy dokončeno`,
-            message: `${task.name} / ${id}`,
+            message: `${task.name} (${task.url})`,
             color: 'green'
           })
         }

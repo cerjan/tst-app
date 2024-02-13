@@ -25,7 +25,12 @@ export const component = function Detail() {
   })
 
   return (
-    <Modal size={'lg'} title={`Úprava úlohy - ${item.name}`} opened={true} onClose={() => navigate({to: '/tasks'})}>
+    <Modal
+      size={'lg'}
+      title={`Úprava úlohy - ${item.name}`}
+      opened
+      onClose={() => navigate({to: '/tasks'})}
+    >
       <TaskForm onSubmit={mutation.mutate} item={item}/>
     </Modal>
   )

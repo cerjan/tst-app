@@ -14,8 +14,10 @@ import {useForm} from "@mantine/form";
 import {HttpMethods, HttpMethodsWithContent, ITask, WeekDays} from "@/api/tasks.ts";
 import {IconCirclePlus, IconTrash} from "@tabler/icons-react";
 import {TimeInput} from "@mantine/dates";
+import {z} from "zod";
 
 export const TaskForm = ({onSubmit, item}: { onSubmit: any, item?: ITask }) => {
+
   const form = useForm({
     initialValues: {
       name: item?.name ?? '',
@@ -45,69 +47,135 @@ export const TaskForm = ({onSubmit, item}: { onSubmit: any, item?: ITask }) => {
         return headers
       }, {}),
       endAt: values.endAt || null
-    })
+    }),
+    validate: {
+      url: value => z.string().url().safeParse(value).success ? null : 'Zadejte správnou URL adresu.',
+      content: value => {
+        try {
+          JSON.parse(value)
+          return null
+        } catch (e) {
+          return 'Zadejte validní JSON data.'
+        }
+      }
+    }
   })
 
   return (
     <form onSubmit={form.onSubmit(data => onSubmit(data))}>
       <Stack>
-        <TextInput label="Název:" required disabled={!!item} {...form.getInputProps('name')}/>
+        <TextInput
+          label="Název:"
+          required
+          disabled={!!item}
+          {...form.getInputProps('name')}
+        />
         <Grid>
-          <Grid.Col span={3}><Select label="Metoda:" required
-                                     data={HttpMethods} {...form.getInputProps('httpMethod')}/></Grid.Col>
-          <Grid.Col span={9}><TextInput label="URL:" required {...form.getInputProps('url')}/></Grid.Col>
+          <Grid.Col span={3}>
+            <Select
+              label="Metoda:"
+              required
+              data={HttpMethods}
+              {...form.getInputProps('httpMethod')}
+            />
+          </Grid.Col>
+          <Grid.Col span={9}>
+            <TextInput
+              label="URL:"
+              required {...form.getInputProps('url')}
+            />
+          </Grid.Col>
         </Grid>
-
         <Grid>
-          <Grid.Col span={3}><NumberInput label="Interval:"
-                                          rightSection="s" {...form.getInputProps('interval')}/></Grid.Col>
+          <Grid.Col span={3}>
+            <NumberInput
+              label="Interval:"
+              rightSection="s"
+              {...form.getInputProps('interval')}
+            />
+          </Grid.Col>
           <Grid.Col span={'auto'}>
             <TimeInput
               withSeconds
               required
-              label="Od:" {...form.getInputProps('startAt')}
+              label="Od:"
+              {...form.getInputProps('startAt')}
             />
           </Grid.Col>
-          <Grid.Col span={'auto'}><TimeInput withSeconds label="Do:" {...form.getInputProps('endAt')}/></Grid.Col>
+          <Grid.Col span={'auto'}>
+            <TimeInput
+              withSeconds
+              label="Do:"
+              {...form.getInputProps('endAt')}
+            />
+          </Grid.Col>
         </Grid>
 
         <Box>
           <Text size="sm" mb="xs">Dny v týdnu:</Text>
-          {/*<Checkbox.Group defaultValue={(item?.daysOfWeek ?? []).map(d => d.toString())}>*/}
             <Group grow>
               {WeekDays.map((d, i) =>
-                <Checkbox key={i + 1} value={(i+1).toString()} label={d} {...form.getInputProps(`daysOfWeek.${i}`, {type: 'checkbox'})}/>
+                <Checkbox
+                  key={i + 1}
+                  value={(i+1).toString()}
+                  label={d}
+                  {...form.getInputProps(`daysOfWeek.${i}`, {type: 'checkbox'})}
+                />
               )}
             </Group>
-          {/*</Checkbox.Group>*/}
         </Box>
-        <TextInput label="Popis:" {...form.getInputProps('description')}/>
-        <JsonInput description="Body request (json)"
-                   disabled={HttpMethodsWithContent.indexOf(form.values.httpMethod) === -1}
-                   label="Obsah:" {...form.getInputProps('content')} autosize minRows={4}/>
+        <TextInput
+          label="Popis:"
+          {...form.getInputProps('description')}
+        />
+        <JsonInput
+          description="Body request (json)"
+          disabled={HttpMethodsWithContent.indexOf(form.values.httpMethod) === -1}
+          label="Obsah:"
+          {...form.getInputProps('content')}
+          autosize
+          minRows={4}
+        />
         <Box>
-
           <Group gap="xs" mb="xs">
             <Text size="sm">Hlavičky:</Text>
-            <Anchor onClick={() => form.insertListItem('headers', {key: '', value: ''})} mt={-3}><IconCirclePlus size="1.2rem"/></Anchor>
+            <Anchor
+              onClick={() => form.insertListItem('headers', {key: '', value: ''})}
+              mt={-3}
+            >
+              <IconCirclePlus size="1.2rem"/>
+            </Anchor>
           </Group>
-
-
-          {form.values.headers?.map((_header, index) => (
+          {form.values.headers?.map((_header, index) =>
             <Group key={index} mb="xs">
-              <TextInput className="flex-grow" size="xs"
-                         placeholder="Key" {...form.getInputProps(`headers.${index}.key`)}/>
-              <TextInput className="flex-grow" size="xs"
-                         placeholder="Value" {...form.getInputProps(`headers.${index}.value`)}/>
-              <ActionIcon color="red" variant="light" onClick={() => form.removeListItem('headers', index)}>
+              <TextInput
+                className="flex-grow"
+                size="xs"
+                placeholder="Key"
+                {...form.getInputProps(`headers.${index}.key`)}
+              />
+              <TextInput
+                className="flex-grow"
+                size="xs"
+                placeholder="Value"
+                {...form.getInputProps(`headers.${index}.value`)}
+              />
+              <ActionIcon
+                color="red"
+                variant="light"
+                onClick={() => form.removeListItem('headers', index)}
+              >
                 <IconTrash size="1rem"/>
               </ActionIcon>
             </Group>
-          ))}
+          )}
         </Box>
-
         <Group justify={'space-between'}>
-          <Switch label="Aktivní" {...form.getInputProps('isValid')} checked={form.values.isValid}/>
+          <Switch
+            label="Aktivní"
+            {...form.getInputProps('isValid')}
+            checked={form.values.isValid}
+          />
           <Button type="submit">Uložit</Button>
         </Group>
       </Stack>

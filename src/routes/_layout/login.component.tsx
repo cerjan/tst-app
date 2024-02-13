@@ -26,16 +26,25 @@ export const component = function Login() {
   )
 
   return (
-    <>
-      <form onSubmit={form.onSubmit(data => login.mutate(data))}>
-        <Stack maw={280}>
-          <TextInput label={'Uživatelské jméno:'} required {...form.getInputProps('username')}/>
-          <PasswordInput label={'Heslo:'} required {...form.getInputProps('password')}/>
-          <Group justify={'start'}>
-            <Button type={'submit'} loading={login.isPending}>OK</Button>
-          </Group>
-        </Stack>
-      </form>
-    </>
+    <form onSubmit={form.onSubmit(data => login.mutate(data))}>
+      <Stack maw={280}>
+        <TextInput
+          label={'Uživatelské jméno:'}
+          required
+          {...form.getInputProps('username')}
+        />
+        <PasswordInput
+          label={'Heslo:'}
+          required
+          {...form.getInputProps('password')}
+        />
+        <Group justify={'start'}>
+          <Button
+            type={'submit'}
+            loading={login.isPending}
+          >OK</Button>
+        </Group>
+      </Stack>
+    </form>
   )
 }

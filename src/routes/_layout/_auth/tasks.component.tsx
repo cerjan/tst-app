@@ -22,39 +22,58 @@ export const component = function Home() {
       </Group>
       <Table>
         <Table.Tbody>
-          {Object.entries(data).map(([id, item]) => <Table.Tr key={id} c={item.isValid ? '' : 'dimmed'} td={item.isValid ? '' : 'line-through'}>
-            <Table.Td>
-              <TextPair description={item.description}>{item.name}</TextPair>
-            </Table.Td>
-            <Table.Td>
-              <TextPair description={item.login}>{item.fullname}</TextPair>
-            </Table.Td>
-            <Table.Td>
-              <TextPair description={item.httpMethod}>{item.url}</TextPair>
-            </Table.Td>
-            <Table.Td>
-              <TextPair
-                description={item.daysOfWeek.map(d => WeekDays[d - 1]).join(', ')}>od {item.startAt} {item.endAt && `do ${item.endAt}`} / {item.interval} s</TextPair>
-            </Table.Td>
-            <Table.Td>
-              <TextPair description="Hlavičky">{Object.entries(item.headers ?? {}).map(([k, _v]) => k).join(', ')}</TextPair>
-            </Table.Td>
-            <Table.Td>
-              <Group gap={'xs'} justify={'end'}>
-                <ActionIconGroup>
-                  <ActionIcon title={'Spustit'} variant={'light'}>
-                    <IconPlayerPlay size={'1rem'}/>
-                  </ActionIcon>
-                  <ActionIcon title={'Upravit'} variant={'light'} component={Link} to={'/tasks/$id'} params={{id}}>
-                    <IconEdit size={'1rem'}/>
-                  </ActionIcon>
-                  <ActionIcon title={'Smazat'} variant={'light'} color={'red'}>
-                    <IconTrash size={'1rem'}/>
-                  </ActionIcon>
-                </ActionIconGroup>
-              </Group>
-            </Table.Td>
-          </Table.Tr>)}
+          {Object.entries(data).map(([id, item]) =>
+            <Table.Tr
+              key={id}
+              c={item.isValid ? '' : 'dimmed'}
+              td={item.isValid ? '' : 'line-through'}
+            >
+              <Table.Td>
+                <TextPair description={item.description}>{item.name}</TextPair>
+              </Table.Td>
+              <Table.Td>
+                <TextPair description={item.login}>{item.fullname}</TextPair>
+              </Table.Td>
+              <Table.Td>
+                <TextPair description={item.httpMethod}>{item.url}</TextPair>
+              </Table.Td>
+              <Table.Td>
+                <TextPair
+                  description={item.daysOfWeek.map(d => WeekDays[d - 1]).join(', ')}
+                >od {item.startAt} {item.endAt && `do ${item.endAt}`} / {item.interval} s</TextPair>
+              </Table.Td>
+              <Table.Td>
+                <TextPair
+                  description="Hlavičky"
+                >{Object.entries(item.headers ?? {}).map(([k, _v]) => k).join(', ')}</TextPair>
+              </Table.Td>
+              <Table.Td>
+                <Group gap={'xs'} justify={'end'}>
+                  <ActionIconGroup>
+                    <ActionIcon title={'Spustit'} variant={'light'}>
+                      <IconPlayerPlay size={'1rem'}/>
+                    </ActionIcon>
+                    <ActionIcon
+                      title={'Upravit'}
+                      variant={'light'}
+                      component={Link}
+                      to={'/tasks/$id'}
+                      params={{id}}
+                    >
+                      <IconEdit size={'1rem'}/>
+                    </ActionIcon>
+                    <ActionIcon
+                      title={'Smazat'}
+                      variant={'light'}
+                      color={'red'}
+                    >
+                      <IconTrash size={'1rem'}/>
+                    </ActionIcon>
+                  </ActionIconGroup>
+                </Group>
+              </Table.Td>
+            </Table.Tr>
+          )}
         </Table.Tbody>
       </Table>
       <Outlet/>

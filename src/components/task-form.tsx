@@ -52,7 +52,7 @@ export const TaskForm = ({onSubmit, item}: { onSubmit: any, item?: ITask }) => {
       url: value => z.string().url().safeParse(value).success ? null : 'Zadejte správnou URL adresu.',
       content: value => {
         try {
-          JSON.parse(value)
+          JSON.parse(value || '{}')
           return null
         } catch (e) {
           return 'Zadejte validní JSON data.'
@@ -177,6 +177,9 @@ export const TaskForm = ({onSubmit, item}: { onSubmit: any, item?: ITask }) => {
             checked={form.values.isValid}
           />
           <Button type="submit">Uložit</Button>
+        </Group>
+        <Group justify={'end'}>
+          <Anchor type="reset" onClick={() => form.reset()} size="xs" c="dimmed">Obnovit formulář</Anchor>
         </Group>
       </Stack>
     </form>

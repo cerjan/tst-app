@@ -21,6 +21,16 @@ export const component = function Home() {
         </Link>
       </Group>
       <Table>
+        <Table.Thead>
+          <Table.Tr>
+            <Table.Th>Název</Table.Th>
+            <Table.Th>Autor</Table.Th>
+            <Table.Th>URL</Table.Th>
+            <Table.Th>Plán</Table.Th>
+            <Table.Th>Hlavičky</Table.Th>
+            <Table.Th></Table.Th>
+          </Table.Tr>
+        </Table.Thead>
         <Table.Tbody>
           {Object.entries(data).map(([id, item]) =>
             <Table.Tr

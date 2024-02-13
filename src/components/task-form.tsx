@@ -11,37 +11,41 @@ import {
   TextInput
 } from "@mantine/core";
 import {useForm} from "@mantine/form";
-import {HttpMethods, HttpMethodsWithContent, normalize, ITaskForm, ITask} from "@/api/tasks.ts";
+import {HttpMethods, HttpMethodsWithContent, ITask, WeekDays} from "@/api/tasks.ts";
 import {IconCirclePlus, IconTrash} from "@tabler/icons-react";
 import {TimeInput} from "@mantine/dates";
-import {useEffect} from "react";
 
 export const TaskForm = ({onSubmit, item}: { onSubmit: any, item?: ITask }) => {
-  const form = useForm<ITaskForm>({
+  const form = useForm({
     initialValues: {
-      name: '',
-      ...item,
-      daysOfWeek: item?.daysOfWeek?.reduce(
-        (daysOfWeek, day) => {
-          daysOfWeek[day - 1] = true;
-          return daysOfWeek;
-        },
-        Array(7).fill(false)
-      ),
+      name: item?.name ?? '',
+      httpMethod: item?.httpMethod ?? '',
+      interval: item?.interval ?? 60,
+      url: item?.url ?? '',
+      description: item?.description ?? '',
+      startAt: item?.startAt ?? '00:00:00',
+      endAt: item?.endAt ?? '',
+      content: item?.content ?? '',
+      headers: Object.entries(item?.headers ?? {}).map(([key, value]) => ({ key, value })),
+      daysOfWeek: (item?.daysOfWeek ?? []).reduce((days, day) => {
+        days[day - 1] = true
+
+        return days
+      }, Array(7).fill(false)),
+      isValid: item?.isValid ?? true,
     },
-    /*
-    validate: (values) => ({
-      url: z.isURL()
+    transformValues: values => ({
+      ...values,
+      daysOfWeek: values.daysOfWeek
+        .map((isChecked, index) => isChecked && (index + 1))
+        .filter(day => !!day),
+      headers: values.headers.reduce<Record<string, string>>((headers, header) => {
+        headers[header.key] = header.value
+
+        return headers
+      }, {})
     })
-     */
   })
-
-  console.log(form.values.daysOfWeek);
-
-  useEffect(() => {
-    if(form.initialized)
-      form.initialize(item);
-  }, [item]);
 
   return (
     <form onSubmit={form.onSubmit(data => onSubmit(data))}>
@@ -68,18 +72,13 @@ export const TaskForm = ({onSubmit, item}: { onSubmit: any, item?: ITask }) => {
 
         <Box>
           <Text size="sm" mb="xs">Dny v týdnu:</Text>
-          <Checkbox.Group>
+          {/*<Checkbox.Group defaultValue={(item?.daysOfWeek ?? []).map(d => d.toString())}>*/}
             <Group grow>
-              <Checkbox value={'1'} label="Po" {...form.getInputProps('daysOfWeek.0', {type: 'checkbox'})}/>
-              <Checkbox value={'2'} label="Út" {...form.getInputProps('daysOfWeek.1', {type: 'checkbox'})}/>
-              <Checkbox value={'3'} label="St" {...form.getInputProps('daysOfWeek.2', {type: 'checkbox'})}/>
-              <Checkbox value={'4'} label="Čt" {...form.getInputProps('daysOfWeek.3', {type: 'checkbox'})}/>
-              <Checkbox value={'5'} label="Pá" {...form.getInputProps('daysOfWeek.4', {type: 'checkbox'})}/>
-              <Checkbox value={'6'} label="So" {...form.getInputProps('daysOfWeek.5', {type: 'checkbox'})}/>
-              <Checkbox value={'7'} label="Ne" {...form.getInputProps('daysOfWeek.6', {type: 'checkbox'})}/>
+              {WeekDays.map((d, i) =>
+                <Checkbox key={i + 1} value={(i+1).toString()} label={d} {...form.getInputProps(`daysOfWeek.${i}`, {type: 'checkbox'})}/>
+              )}
             </Group>
-          </Checkbox.Group>
-
+          {/*</Checkbox.Group>*/}
         </Box>
         <TextInput label="Popis:" {...form.getInputProps('description')}/>
         <JsonInput description="Body request (json)"

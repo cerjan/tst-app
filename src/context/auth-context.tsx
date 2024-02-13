@@ -1,7 +1,6 @@
 import React, {createContext, useEffect, useState} from "react";
 import {session} from "@/api/session.ts";
-import {Center, Loader} from "@mantine/core";
-import {useMutation} from "@tanstack/react-query";
+import {useQuery} from "@tanstack/react-query";
 
 export interface LoggedUser {
   unique_name: string
@@ -13,29 +12,25 @@ export interface LoggedUser {
 export const AuthContext = createContext<{
   user?: LoggedUser
   setUser: (user?: LoggedUser) => void
+  isLoading: boolean
 }>({
-  setUser: () => {}
+  setUser: () => {},
+  isLoading: true
 })
 
 export const AuthProvider = ({children}: {children: React.ReactNode}) => {
   const [user, setUser] = useState<LoggedUser>()
 
-  const mutation = useMutation({
-    mutationFn: session.get,
-    onSuccess: data => setUser(data)
+    const {data, isLoading} = useQuery({
+    queryKey: ['session'],
+    queryFn: session.get
   })
 
   useEffect(() => {
-    mutation.mutate()
-  }, []);
-
-  if (mutation.isPending) return (
-    <Center h={'100vh'}>
-      <Loader/>
-    </Center>
-  )
+    setUser(data)
+  }, [data]);
 
   return (
-    <AuthContext.Provider value={{user, setUser}}>{children}</AuthContext.Provider>
+    <AuthContext.Provider value={{user, setUser, isLoading}}>{children}</AuthContext.Provider>
   )
 }

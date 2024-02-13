@@ -2,13 +2,31 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import './index.css'
 import '@mantine/core/styles.css'
+import '@mantine/notifications/styles.css'
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
 import {Router, RouterProvider} from "@tanstack/react-router";
 import {routeTree} from "./routeTree.gen.ts";
 import {createTheme, MantineProvider} from "@mantine/core";
 import {AxiosError} from "axios";
+import {Notifications, notifications} from "@mantine/notifications";
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: false,
+      refetchOnWindowFocus: false,
+    },
+    mutations: {
+      onError: error => {
+        notifications.show({
+          color: 'red',
+          title: (error as any).response.data.message.en,
+          message: (error as any).response.data.description.en
+        })
+      }
+    }
+  }
+})
 const router = new Router({
   routeTree,
   context: {
@@ -32,6 +50,7 @@ const theme = createTheme({
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <MantineProvider theme={theme}>
+      <Notifications zIndex={100000}/>
       <QueryClientProvider client={queryClient}>
         <RouterProvider router={router}/>
       </QueryClientProvider>

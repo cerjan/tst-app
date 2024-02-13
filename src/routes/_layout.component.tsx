@@ -12,14 +12,21 @@ import {
 import {session} from "@/api/session.ts";
 import {useMutation} from "@tanstack/react-query";
 import {IconPower} from "@tabler/icons-react";
+import {Center} from "@mantine/core";
 
 export const component = function Layout() {
-  const {user, setUser} = useContext(AuthContext)
+  const {user, setUser, isLoading} = useContext(AuthContext)
 
   const mutation = useMutation({
     mutationFn: session.delete,
-    onSuccess: () => setUser(undefined)
+    onSuccess: () => setUser()
   })
+
+  if (isLoading) return (
+    <Center h={'100vh'}>
+      <Loader/>
+    </Center>
+  )
 
   return (
     <AppShell

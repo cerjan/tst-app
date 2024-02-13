@@ -7,8 +7,8 @@ export interface LoginData {
 }
 
 export const session = {
-  get: async (): Promise<LoggedUser> => await client.get('auth/session').then(r => r.data),
-  delete: async () => await client.post('auth/logout'),
+  get: (): Promise<LoggedUser> => client.get('auth/session').then(r => r.data),
+  delete: () => client.post('auth/logout'),
   post: (data: LoginData): Promise<LoggedUser> => client.post('auth/login', data).then(r => r.data),
 }
 

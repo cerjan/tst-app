@@ -1,7 +1,7 @@
 import axios from "axios";
 
 export const client = axios.create({
-  baseURL: 'https://scheduler.int.adler.local/api/v1',
+  baseURL: import.meta.env.VITE_API_BASE_URL,
   withCredentials: true,
 })
 

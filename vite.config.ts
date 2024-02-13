@@ -13,5 +13,16 @@ export default defineConfig({
       '@': '/src',
       '@components': '/src/components',
     }
+  },
+  server: {
+    port: 3000,
+    host: '0.0.0.0',
+    proxy: {
+      '/api': {
+        target: 'https://scheduler.int.adler.local/api/v1',
+        secure: false,
+        cookieDomainRewrite: ''
+      }
+    }
   }
 })

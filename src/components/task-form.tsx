@@ -43,7 +43,8 @@ export const TaskForm = ({onSubmit, item}: { onSubmit: any, item?: ITask }) => {
         headers[header.key] = header.value
 
         return headers
-      }, {})
+      }, {}),
+      endAt: values.endAt || null
     })
   })
 
